@@ -15,12 +15,14 @@ export const useProfile = () => {
     enabled: !!user?.email,
     onSuccess: (data) => {
       setProfile(data);
+      console.log("Profile stored")
       sessionStorage.setItem('userProfile', JSON.stringify(data));
     },
     onError: (error: Error) => {
       setError(error.message);
     },
   });
+
 
   const { mutate: updateProfile } = useMutation({
     mutationFn: (updates: Partial<UserProfile>) =>

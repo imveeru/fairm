@@ -10,12 +10,12 @@ interface AISummaryProps {
 
 export const AISummary: React.FC<AISummaryProps> = ({ summary }) => {
   return (
-    <Card className="p-4 mb-6 bg-gradient-to-r from-[#c0d1cb] to-[#3ea57d] shadow-lg">
-      <div className="flex items-center space-x-2 mb-2">
-        <Sparkles className="h-5 w-5 text-white" />
+    <Card className="p-4 mb-6 bg-gradient-to-r from-[#3ea57d] to-[#4aa985] shadow-lg">
+      <div className="flex items-center mb-2 space-x-2">
+        <Sparkles className="w-5 h-5 text-white fill-white" />
         <h3 className="font-semibold text-white">AI Summary</h3>
       </div>
-      <div className="prose prose-sm prose-invert max-w-none">
+      <div className="prose-sm prose prose-invert max-w-none">
         <ReactMarkdown remarkPlugins={[remarkGfm]}>{summary}</ReactMarkdown>
       </div>
     </Card>

@@ -10,6 +10,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '@/store/authStore';
 import { useProfile } from '@/hooks/useProfile';
+import { useQuery } from '@tanstack/react-query';
 
 const menuItems = [
   { icon: LayoutDashboard, label: 'Dashboard', path: '/dashboard' },
@@ -19,17 +20,31 @@ const menuItems = [
   { icon: BarChart3, label: 'Market Hub', path: '/market' },
 ];
 
+
 export const Sidebar = () => {
   const location = useLocation();
   const { user } = useAuthStore();
   const { profile } = useProfile();
-  const avatarUrl = `https://api.dicebear.com/7.x/avatars/svg?seed=${user?.email}`;
+  const avatarUrl = `https://api.dicebear.com/9.x/pixel-art/svg?seed=${user?.email}`;
 
+  const { data: locationAddress } = useQuery({
+    queryKey: ['locationAddress'],
+    queryFn: async () => {
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${profile["location"].split(",")[0]}&lon=${profile["location"].split(",")[1]}`);
+      return response.json();
+    },
+  });
+
+  let locationName = "";
+  if(locationAddress){
+    locationName = locationAddress["address"]["state_district"]+", "+locationAddress["address"]["state"]+", "+locationAddress["address"]["country"];
+  }
+  
   return (
-    <aside className="w-64 bg-white border-r border-gray-200 h-screen fixed left-0 top-16">
+    <aside className="fixed left-0 w-64 h-screen bg-white border-r border-gray-200 top-16">
       <nav className="p-4 flex flex-col h-[calc(100vh-4rem)]">
         {/* Menu Items */}
-        <ul className="space-y-2 flex-1">
+        <ul className="flex-1 space-y-2">
           {menuItems.map((item) => {
             const Icon = item.icon;
             return (
@@ -41,7 +56,7 @@ export const Sidebar = () => {
                     location.pathname === item.path && 'bg-primary/10 text-primary'
                   )}
                 >
-                  <Icon className="h-5 w-5" />
+                  <Icon className="w-5 h-5" />
                   <span>{item.label}</span>
                 </Link>
               </li>
@@ -60,12 +75,12 @@ export const Sidebar = () => {
           <img
             src={avatarUrl}
             alt="Profile"
-            className="h-10 w-10 rounded-full bg-gray-100"
+            className="w-10 h-10 bg-gray-100 rounded-full"
           />
           <div className="flex-1 min-w-0">
             <p className="text-sm font-medium truncate">{user?.email}</p>
             <p className="text-xs text-gray-500 truncate">
-              {profile?.location || 'Set your location'}
+              {locationName  || 'Set your location'}
             </p>
           </div>
         </Link>

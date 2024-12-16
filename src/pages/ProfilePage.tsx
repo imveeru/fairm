@@ -29,12 +29,12 @@ const ProfilePage = () => {
           <h1 className="text-2xl font-bold">Profile</h1>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           <div className="lg:col-span-2">
             <Card className="p-6">
-              <div className="flex items-center space-x-4 mb-6">
-                <div className="bg-primary/10 p-4 rounded-full">
-                  <UserCircle className="h-12 w-12 text-primary" />
+              <div className="flex items-center mb-6 space-x-4">
+                <div className="p-4 rounded-full bg-primary/10">
+                  <UserCircle className="w-12 h-12 text-primary" />
                 </div>
                 <div>
                   <h2 className="text-xl font-semibold">{profile?.email}</h2>
