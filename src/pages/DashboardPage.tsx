@@ -137,6 +137,7 @@ const DashboardPage = () => {
                     <a 
                       href={item.link}
                       className="inline-flex items-center text-sm text-primary hover:text-primary/80"
+                      target='_blank'
                     >
                       Read more <ExternalLink className="w-4 h-4 ml-1" />
                     </a>
