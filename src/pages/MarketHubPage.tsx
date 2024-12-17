@@ -3,85 +3,66 @@ import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import { useQuery } from '@tanstack/react-query';
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import { useProfile } from '@/hooks/useProfile';
 import { AISummary } from '@/components/shared/AISummary';
+import {Loader} from 'lucide-react';
 import { MarkdownContent } from '@/components/shared/MarkdownContent';
 
 const MarketHubPage = () => {
-  const { data: marketData } = useQuery({
-    queryKey: ['market'],
+
+  const API_URL = import.meta.env.VITE_API_URL;
+  const { profile } = useProfile();
+  // console.log("Profile", profile["location"].split(","));
+  const lat = parseFloat(profile["location"].split(",")[0]);
+  const lon = parseFloat(profile["location"].split(",")[1]);
+
+  const { data: locationAddress } = useQuery({
+    queryKey: ['locationAddress'],
     queryFn: async () => {
-      const response = await fetch('http://localhost:8000/api/market/prices');
+      const response = await fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${profile["location"].split(",")[0]}&lon=${profile["location"].split(",")[1]}`);
       return response.json();
     },
   });
 
-  const aiSummary = `## Market Intelligence Summary
-Current market analysis indicates:
+  let priceData = "No need to forecast due to unavailability of pricing data.";
+  if(locationAddress["address"]["country"] == "India"){
+    const { data: priceData } = useQuery({
+      queryKey: ['priceData'],
+      queryFn: async () => {
+        const response = await fetch(`https://api.data.gov.in/resource/35985678-0d79-46b4-9ed6-6f13308a1d24?format=json&api-key=579b464db66ec23bdd000001cdc3b564546246a772a26393094f5645&filters[State.keyword]=${locationAddress["address"]["state"]}&filters[District.keyword]=${locationAddress["address"]["state_district"]}&filters[Commodity.keyword]=Apple&sort[Market.keyword]=asc`);
+        return response.json();
+      },
+    });
+  }
 
-- **Price Trends**: Upward momentum for wheat
-- **Supply Chain**: Optimal logistics routes available
-- **Market Gaps**: High demand for organic produce
-- **Action Items**: Consider forward contracts`;
+  const resourcesData = {
+    "equipments":profile.equipment,
+    "financialCapacity":profile.financialCapacity,
+    "irrigation":profile.irrigationSystems,
+    "machinery":profile.machinery,
+    "constraints":profile.resourceConstraints,    
+  }
 
-  const logisticsContent = `# Logistics Analysis
-Optimize your supply chain and transportation.
+  const { data: marketData, isLoading:contentLoading } = useQuery({
+    queryKey: ['marketData'],
+    queryFn: async () => {
+      const URL = `${API_URL}/api/ai/get_logistics?price_data=${JSON.stringify(priceData) || "No need to forecast due to unavailability of pricing data."}&resources_data=${JSON.stringify(resourcesData) || ""}`
+      const response = await fetch(URL, {method:"POST"});
+      return response.json();
+    },
+    staleTime: 600000
+  });
 
-## Available Partners
-- Regional transporters
-- Storage facilities
-- Distribution networks
+  console.log(marketData)
 
-## Recommendations
-Based on your location and production volume:
+  const priceContent = marketData?.forecast_res;
 
-### Transportation
-- Optimal routes identified
-- Cost-effective carriers available
-- Bulk shipping opportunities
+  const aiSummary = marketData?.summary;
 
-### Storage
-- Local facilities available
-- Temperature-controlled options
-- Flexible capacity
+  const logisticsContent = marketData?.logistics_res;
 
-### Distribution
-- Direct-to-market channels
-- Wholesale partnerships
-- Export opportunities`;
+  const ideasContent = marketData?.strategy_res;
 
-  const ideasContent = `# Future Market Opportunities
-Strategic planning for market expansion.
-
-## Emerging Trends
-- Organic certification premium
-- Sustainable farming practices
-- Value-added processing
-
-## Growth Strategies
-Detailed analysis of potential opportunities:
-
-### Product Development
-- Organic certification
-- Specialty crop varieties
-- Value-added processing
-
-### Market Expansion
-- Direct-to-consumer channels
-- Export markets
-- Niche market segments
-
-### Sustainability Initiatives
-- Carbon credits
-- Regenerative practices
-- Eco-certification`;
-
-  const priceData = marketData?.crop_prices
-    ? Object.entries(marketData.crop_prices).map(([crop, price]) => ({
-        crop,
-        price,
-      }))
-    : [];
 
   return (
     <DashboardLayout>
@@ -89,6 +70,7 @@ Detailed analysis of potential opportunities:
         <h1 className="text-2xl font-bold">Market & Logistics Hub</h1>
         
         <AISummary summary={aiSummary} />
+        
         
         <Card className="p-6">
           <Tabs defaultValue="prices" className="h-[calc(100vh-24rem)]">
@@ -100,39 +82,18 @@ Detailed analysis of potential opportunities:
 
             <div className="mt-6 h-[calc(100%-4rem)] overflow-y-auto">
               <TabsContent value="prices" className="h-full">
-                <div className="space-y-6">
-                  <h2 className="text-lg font-semibold">Current Market Prices</h2>
-                  <div className="h-80">
-                    <ResponsiveContainer width="100%" height="100%">
-                      <LineChart data={priceData}>
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="crop" />
-                        <YAxis />
-                        <Tooltip />
-                        <Line type="monotone" dataKey="price" stroke="#27A383" />
-                      </LineChart>
-                    </ResponsiveContainer>
-                  </div>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
-                    {marketData?.demand_forecast &&
-                      Object.entries(marketData.demand_forecast).map(([crop, trend]) => (
-                        <div key={crop} className="p-4 bg-gray-50 rounded-lg">
-                          <h3 className="font-medium capitalize">{crop}</h3>
-                          <p className="text-sm text-gray-600 mt-1">
-                            Trend: <span className="capitalize">{trend}</span>
-                          </p>
-                        </div>
-                      ))}
-                  </div>
-                </div>
+                <MarkdownContent content={priceContent} />
+                {contentLoading && <Loader className='animate-spin text-primary' />}
               </TabsContent>
 
               <TabsContent value="logistics">
                 <MarkdownContent content={logisticsContent} />
+                {contentLoading && <Loader className='animate-spin text-primary' />}
               </TabsContent>
 
               <TabsContent value="ideas">
                 <MarkdownContent content={ideasContent} />
+                {contentLoading && <Loader className='animate-spin text-primary' />}
               </TabsContent>
             </div>
           </Tabs>

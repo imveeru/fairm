@@ -6,6 +6,7 @@ import { AISummary } from '@/components/shared/AISummary';
 import { MarkdownContent } from '@/components/shared/MarkdownContent';
 import { useQuery } from '@tanstack/react-query';
 import { useProfile } from '@/hooks/useProfile';
+import {List, Loader} from 'lucide-react';
 
 const CropPlannerPage = () => {
 
@@ -39,16 +40,44 @@ const CropPlannerPage = () => {
     "constraints":profile.resourceConstraints,    
   }
 
-  const { data: aiInsights } = useQuery({
+  const { data: aiInsights, isLoading:contentLoading } = useQuery({
     queryKey: ['aiInsights'],
     queryFn: async () => {
       const URL = `${API_URL}/api/ai/get_crop_plan?soil_data=${JSON.stringify(soilData) || ""}&weather_data=${JSON.stringify(weatherData)}&resources_data=${JSON.stringify(resourcesData)}`
       const response = await fetch(URL,{method:"POST"});
       return response.json();
     },
+    staleTime: 600000
   });
 
   console.log(JSON.stringify(aiInsights))
+
+  interface SoilProfileContent {
+      interpretation: string;
+      crops: [string, string][];
+  }
+
+
+function convertToMarkdown(content: SoilProfileContent): string {
+    // Ensure the crops array is defined and has elements
+    if (!content.crops || content.crops.length === 0) {
+        throw new Error("Crops data is missing or empty.");
+    }
+
+    // Create a markdown for the soil interpretation
+    let markdown = `### Interpretation\n\n${content.interpretation}\n\n`;
+
+    // Create a markdown for the list of crops
+    markdown += `### Recommended Crops\n\n`;
+
+    console.log(content.crops)
+
+    content.crops.forEach(crop => {
+        markdown += `- **${crop[0]}**: ${crop[1]}\n`;
+    });
+
+    return markdown;
+  }
 
   let aiSummary= "";
   let geographyContent = "";
@@ -57,9 +86,9 @@ const CropPlannerPage = () => {
   
   if(aiInsights){
     aiSummary= aiInsights["summary"];
-    geographyContent = JSON.stringify(aiInsights["geo_res"]);
-    weatherContent = JSON.stringify(aiInsights["weather_res"]);
-    resourcesContent = JSON.stringify(aiInsights["optim_res"]); 
+    geographyContent = convertToMarkdown(aiInsights["geo_res"]);
+    weatherContent = convertToMarkdown(aiInsights["weather_res"]);
+    resourcesContent = convertToMarkdown(aiInsights["optim_res"]); 
   }
 
   
@@ -82,14 +111,17 @@ const CropPlannerPage = () => {
 
             <div className="mt-6 h-[calc(100%-4rem)] overflow-y-auto">
               <TabsContent value="geography">
+                {contentLoading && <Loader className='animate-spin text-primary' />}
                 <MarkdownContent content={geographyContent} />
               </TabsContent>
 
               <TabsContent value="weather">
+                {contentLoading && <Loader className='animate-spin text-primary' />}
                 <MarkdownContent content={weatherContent} />
               </TabsContent>
 
               <TabsContent value="resources">
+                {contentLoading && <Loader className='animate-spin text-primary' />}
                 <MarkdownContent content={resourcesContent} />
               </TabsContent>
 

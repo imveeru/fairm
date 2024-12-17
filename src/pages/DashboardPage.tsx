@@ -2,8 +2,8 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { DashboardLayout } from '@/components/layout/DashboardLayout';
 import { Card } from '@/components/ui/card';
-import { Droplets, Thermometer, Wind, CloudMoonRain, ExternalLink, CloudHail } from 'lucide-react';
-import { Table } from '@/components/ui/table';
+import { Loader, Droplets, Thermometer, CloudMoonRain, ExternalLink, CloudHail } from 'lucide-react';
+// import { Table } from '@/components/ui/table';
 import { useProfile } from '@/hooks/useProfile';
 
 const DashboardPage = () => {
@@ -28,6 +28,8 @@ const DashboardPage = () => {
     locationName = locationAddress["address"]["state_district"]+", "+locationAddress["address"]["state"]+", "+locationAddress["address"]["country"];
   }
   
+  // console.log(locationName)
+
   const { data: weatherData } = useQuery({
     queryKey: ['weather'],
     queryFn: async () => {
@@ -36,7 +38,7 @@ const DashboardPage = () => {
     },
   });
 
-  const { data: newsItems } = useQuery({
+  const { data: newsItems, isLoading:newsLoading } = useQuery({
     queryKey: ['newsItems'],
     queryFn: async () => {
       const URL = `${API_URL}/api/ai/get_news?loc=${locationName || ""}`
@@ -44,7 +46,7 @@ const DashboardPage = () => {
       const response = await fetch(URL, {method:"POST"});
       return response.json();
     },
-    staleTime: 300000
+    staleTime: 600000
   });
 
   const kpiCards = [
@@ -128,6 +130,7 @@ const DashboardPage = () => {
             <Card className="p-6">
               <h2 className="mb-6 text-xl font-semibold">🗞️ What's new in the world of farming?</h2>
               <div className="space-y-6">
+                {newsLoading && <Loader className='animate-spin text-primary' />}
                 {newsItems && newsItems.map((item, index) => (
                   <div key={index} className="p-4 rounded-lg bg-gray-50">
                     <h3 className="mb-2 font-medium">{item.title}</h3>
