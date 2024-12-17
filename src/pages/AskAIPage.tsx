@@ -139,7 +139,7 @@ const AskAIPage = () => {
                     >
                       {message.type === 'ai' ? 
                       <MarkdownContent content={message.content}></MarkdownContent> : 
-                      (currImg ? <p>{message.content}</p> : <p>"bbhb "{message.content}</p>)}
+                      (currImg ? <p>{message.content}</p> : <p>{message.content}</p>)}
                       {/* <p className="mt-1 text-xs opacity-70">
                         {message.timestamp.toLocaleTimeString('en-US',{hour: '2-digit',minute: '2-digit',hour12: false})}
                       </p> */}

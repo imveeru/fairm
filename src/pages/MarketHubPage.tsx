@@ -43,10 +43,12 @@ const MarketHubPage = () => {
     "constraints":profile.resourceConstraints,    
   }
 
+  // console.log()
+
   const { data: marketData, isLoading:contentLoading } = useQuery({
     queryKey: ['marketData'],
     queryFn: async () => {
-      const URL = `${API_URL}/api/ai/get_logistics?price_data=${JSON.stringify(priceData) || "No need to forecast due to unavailability of pricing data."}&resources_data=${JSON.stringify(resourcesData) || ""}`
+      const URL = `${API_URL}/api/ai/get_logistics?price_data=${JSON.stringify(priceData) || "No need to forecast due to unavailability of pricing data."}&resources_data=${JSON.stringify(resourcesData)}`
       const response = await fetch(URL, {method:"POST"});
       return response.json();
     },
