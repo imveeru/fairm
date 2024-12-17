@@ -53,7 +53,7 @@ const MarketHubPage = () => {
     staleTime: 600000
   });
 
-  console.log(marketData)
+  // console.log(marketData)
 
   const priceContent = marketData?.forecast_res;
 
@@ -71,7 +71,6 @@ const MarketHubPage = () => {
         
         <AISummary summary={aiSummary} />
         
-        
         <Card className="p-6">
           <Tabs defaultValue="prices" className="h-[calc(100vh-24rem)]">
             <TabsList className="bg-gray-100/50">
@@ -82,18 +81,18 @@ const MarketHubPage = () => {
 
             <div className="mt-6 h-[calc(100%-4rem)] overflow-y-auto">
               <TabsContent value="prices" className="h-full">
-                <MarkdownContent content={priceContent} />
                 {contentLoading && <Loader className='animate-spin text-primary' />}
+                <MarkdownContent content={priceContent} />
               </TabsContent>
 
               <TabsContent value="logistics">
-                <MarkdownContent content={logisticsContent} />
                 {contentLoading && <Loader className='animate-spin text-primary' />}
+                <MarkdownContent content={logisticsContent} />
               </TabsContent>
 
               <TabsContent value="ideas">
-                <MarkdownContent content={ideasContent} />
                 {contentLoading && <Loader className='animate-spin text-primary' />}
+                <MarkdownContent content={ideasContent} />
               </TabsContent>
             </div>
           </Tabs>
