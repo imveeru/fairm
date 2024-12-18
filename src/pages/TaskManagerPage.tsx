@@ -57,7 +57,7 @@ const TaskManagerPage = () => {
       const response = await fetch(URL,{method:"POST"});
       return response.json();
     },
-    staleTime: 6000000
+    staleTime: 600000
   });
 
   // console.log("Tasks: ",JSON.stringify(taskPlan))
