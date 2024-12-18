@@ -16,6 +16,8 @@ interface Message {
 }
 
 const AskAIPage = () => {
+  const API_URL = import.meta.env.VITE_API_URL;
+  
   const [messages, setMessages] = useState<Message[]>([]);
   console.log(messages)
   const [input, setInput] = useState('');
@@ -76,7 +78,7 @@ const AskAIPage = () => {
     }
 
     try {
-      const response = await fetch('http://localhost:8000/api/ai/chat', {
+      const response = await fetch(`${API_URL}/api/ai/chat`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

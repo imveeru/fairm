@@ -8,6 +8,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useProfile } from '@/hooks/useProfile';
 import {List, Loader} from 'lucide-react';
 
+
 const CropPlannerPage = () => {
 
   const API_URL = import.meta.env.VITE_API_URL;
