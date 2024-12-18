@@ -4,6 +4,7 @@ import { useAuthStore } from '@/store/authStore';
 import { Button } from '@/components/ui/button';
 import { supabase } from '@/lib/supabase';
 import { useConfigStore } from '@/store/configStore';
+import FairmLogo  from '../../static/FAIrm Logo.png'
 
 export const Header = () => {
   const { user, setUser } = useAuthStore();
@@ -27,10 +28,11 @@ export const Header = () => {
   };
 
   return (
-    <header className="bg-white border-b border-gray-200 fixed top-0 left-0 right-0 z-50">
+    <header className="fixed top-0 left-0 right-0 z-50 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between h-16 px-6">
         <div className="flex items-center space-x-2">
-          <Sprout className="h-6 w-6 text-primary" />
+          {/* <Sprout className="w-6 h-6 text-primary" /> */}
+          <img src={FairmLogo} alt="FAIrm Logo" className="w-6 h-6" />
           <span className="text-xl font-semibold">FAIrm</span>
         </div>
         {user && (
@@ -41,7 +43,7 @@ export const Header = () => {
           >
             {loading ? (
               <>
-                <Loader2 className="h-4 w-4 animate-spin mr-2" />
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
                 Signing out...
               </>
             ) : (

@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
-import { Sprout, Send } from 'lucide-react';
+import {  Send } from 'lucide-react';
 import { features } from '@/config/features';
+import FairmLogo  from '../static/FAIrm Logo.png'
 
 const LandingPage = () => {
   const navigate = useNavigate();
@@ -20,22 +21,28 @@ const LandingPage = () => {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="min-h-screen flex flex-col justify-center hero-gradient relative">
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="flex items-center justify-center mb-6">
-            <Sprout className="h-12 w-12 text-white" />
-            <h1 className="text-4xl font-bold ml-2 text-white">FAIrm</h1>
+      <div className="relative flex flex-col justify-center min-h-screen hero-gradient">
+      <div className="absolute inset-0 hero-gradient"></div>
+      <div
+        className="absolute inset-0 bg-center bg-cover"
+        style={{backgroundImage: "url('https://diagram.imgix.net/magician/overlay-min.png?s=e463f843ba0864b6fcccc6c2607133dd')", opacity: "50%"}}
+      ></div>
+        <div className="container relative z-10 px-4 mx-auto text-center">
+          <div className="flex flex-col items-center justify-center mb-6">
+            {/* <Sprout className="w-12 h-12 text-white" /> */}
+            <img src={FairmLogo} alt="FAIrm Logo" className="w-24 h-24" />
+            <h1 className="ml-2 text-2xl font-thin text-white">FAIrm</h1>
           </div>
-          <h2 className="text-5xl font-bold text-white mb-6">
-            Cultivate Success with AI-Powered Farming
+          <h2 className="mb-6 text-5xl font-bold text-white">
+            Cultivate Success<br/>with AI-Powered Farming
           </h2>
-          <p className="text-xl text-white/90 mb-8 max-w-2xl mx-auto">
+          <p className="max-w-2xl mx-auto mb-8 text-xl text-white/90">
             Transform your farming journey with intelligent insights, personalized recommendations,
             and data-driven decision making.
           </p>
           <button 
             onClick={handleGetStarted}
-            className="bg-white text-primary px-8 py-3 rounded-lg text-lg font-medium hover:shadow-lg transition-all duration-200"
+            className="px-8 py-3 text-lg font-semibold transition-all duration-200 bg-white rounded-lg text-primary hover:shadow-xl"
           >
             Get Started
           </button>
@@ -43,16 +50,16 @@ const LandingPage = () => {
       </div>
 
       {/* Features Section */}
-      <div className="bg-white py-24">
-        <div className="container mx-auto px-4">
-          <h3 className="text-3xl font-bold text-center mb-16">Why Choose FAIrm?</h3>
-          <div className="grid md:grid-cols-3 gap-12">
+      <div className="py-24 bg-white">
+        <div className="container px-4 mx-auto">
+          <h3 className="mb-16 text-3xl font-bold text-center">Why FAIrm?</h3>
+          <div className="grid gap-12 md:grid-cols-3">
             {features.map((feature, index) => (
               <div key={index} className="text-center">
-                <div className="bg-green-50 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-6">
+                <div className="flex items-center justify-center w-16 h-16 mx-auto mb-6 rounded-full bg-green-50">
                   {feature.icon}
                 </div>
-                <h4 className="text-xl font-semibold mb-4">{feature.title}</h4>
+                <h4 className="mb-4 text-xl font-semibold">{feature.title}</h4>
                 <p className="text-gray-600">{feature.description}</p>
               </div>
             ))}
@@ -61,13 +68,13 @@ const LandingPage = () => {
       </div>
 
       {/* Footer */}
-      <footer className="bg-gray-50 py-6">
-        <div className="container mx-auto px-4">
-          <div className="max-w-xl mx-auto text-center mb-6">
-            <h4 className="text-2xl font-semibold mb-2">
+      <footer className="py-6 bg-gray-50">
+        <div className="container px-4 mx-auto">
+          <div className="max-w-xl mx-auto mb-6 text-center">
+            <h4 className="mb-2 text-2xl font-semibold">
               Stay Updated with FAIrm
             </h4>
-            <p className="text-gray-600 mb-4">
+            <p className="mb-4 text-gray-600">
               Get the latest updates on farming technology and market insights
             </p>
             <form onSubmit={handleSubscribe} className="flex gap-2">
@@ -76,15 +83,15 @@ const LandingPage = () => {
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
                 placeholder="Enter your email"
-                className="flex-1 px-4 py-2 rounded-md border border-gray-300 focus:outline-none focus:ring-2 focus:ring-primary"
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
               <Button type="submit">
-                <Send className="h-4 w-4" />
+                <Send className="w-4 h-4" />
               </Button>
             </form>
           </div>
-          <div className="text-center text-sm text-gray-600">
+          <div className="text-sm text-center text-gray-600">
             © {new Date().getFullYear()} FAIrm. All rights reserved.
           </div>
         </div>
